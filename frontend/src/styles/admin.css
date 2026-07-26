@@ -1,0 +1,190 @@
+/* ================= LOGIN ================= */
+
+.login-container{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#e0f2fe,#f4f6f8);
+font-family: Arial, sans-serif;
+}
+
+.login-card{
+width:350px;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.1);
+text-align:center;
+transition:0.2s;
+}
+
+.login-card:hover{
+transform:translateY(-5px);
+}
+
+.login-input{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:6px;
+outline:none;
+transition:0.2s;
+}
+
+.login-input:focus{
+border-color:#2d89ef;
+box-shadow:0 0 5px rgba(45,137,239,0.3);
+}
+
+.login-btn{
+width:100%;
+padding:12px;
+background:#2d89ef;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+transition:0.3s;
+}
+
+.login-btn:hover{
+background:#1b6fd6;
+}
+
+/* ================= ADMIN DASHBOARD ================= */
+
+.admin-layout{
+display:flex;
+min-height:100vh;
+font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar{
+width:230px;
+background:#1e293b;
+color:white;
+padding:20px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.sidebar h2{
+margin-bottom:20px;
+}
+
+.sidebar button{
+background:none;
+border:none;
+color:white;
+padding:10px;
+text-align:left;
+cursor:pointer;
+border-radius:6px;
+transition:0.2s;
+}
+
+.sidebar button:hover{
+background:#334155;
+}
+
+.logout-btn{
+margin-top:auto;
+background:#ef4444 !important;
+}
+
+/* Main */
+.main-content{
+flex:1;
+padding:25px;
+background:#f1f5f9;
+}
+
+.main-content h1{
+margin-bottom:20px;
+}
+
+/* Stats */
+.stats{
+display:flex;
+gap:15px;
+margin-bottom:25px;
+flex-wrap:wrap;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+flex:1;
+min-width:150px;
+text-align:center;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-3px);
+}
+
+.card p{
+font-size:20px;
+font-weight:bold;
+color:#2d89ef;
+}
+
+/* Table */
+.token-table{
+width:100%;
+border-collapse:collapse;
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+margin-top:10px;
+}
+
+.token-table th{
+background:#2d89ef;
+color:white;
+padding:12px;
+}
+
+.token-table td{
+padding:12px;
+border-bottom:1px solid #eee;
+text-align:center;
+}
+
+/* Status colors */
+.waiting{ color:#f59e0b; font-weight:bold; }
+.serving{ color:#3b82f6; font-weight:bold; }
+.completed{ color:#10b981; font-weight:bold; }
+
+/* Responsive */
+@media(max-width:768px){
+
+.admin-layout{
+flex-direction:column;
+}
+
+.sidebar{
+width:100%;
+flex-direction:row;
+overflow-x:auto;
+}
+
+.sidebar button{
+flex:1;
+text-align:center;
+}
+
+.stats{
+flex-direction:column;
+}
+
+}
