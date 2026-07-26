@@ -1,202 +1,225 @@
 import { useEffect, useState } from "react";
-import { getOrganizations, getServices, registerCustomer } from "../services/api";
+import {
+  getOrganizations,
+  getServices,
+  registerCustomer
+} from "../services/api";
 
-function CustomerPage(){
+function CustomerPage() {
 
-const [orgs,setOrgs] = useState([]);
-const [services,setServices] = useState([]);
+  const [orgs, setOrgs] = useState([]);
+  const [services, setServices] = useState([]);
 
-const [service,setService] = useState(null);
-const [selectedOrg,setSelectedOrg] = useState(null);
+  const [service, setService] = useState(null);
+  const [selectedOrg, setSelectedOrg] = useState(null);
 
-const [name,setName] = useState("");
-const [phone,setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
 
-const [token,setToken] = useState("");
-const [loading,setLoading] = useState(false);
+  const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  /* Load organizations */
 
-/* Load organizations */
+  useEffect(() => {
 
-useEffect(()=>{
+    getOrganizations()
+      .then((res) => {
+        setOrgs(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Failed to load organizations");
+      });
 
-getOrganizations()
-.then(res=>{
-setOrgs(res.data);
-})
-.catch(()=>{
-alert("Failed to load organizations");
-});
+  }, []);
 
-},[]);
+  /* Select organization */
 
+  const selectOrg = (id) => {
 
-/* Select organization */
+    setSelectedOrg(id);
+    setService(null);
 
-const selectOrg = (id)=>{
+    getServices(id)
+      .then((res) => {
+        setServices(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Failed to load services");
+      });
 
-setSelectedOrg(id);
-setService(null); // reset previous service
+  };
 
-getServices(id)
-.then(res=>{
-setServices(res.data);
-})
-.catch(()=>{
-alert("Failed to load services");
-});
+  /* Generate Token */
 
-};
+  const generateToken = () => {
 
+    if (!name.trim() || !phone.trim() || service === null) {
+      alert("Please fill all fields");
+      return;
+    }
 
-/* Generate Token */
+    setLoading(true);
 
-const generateToken = ()=>{
+    registerCustomer({
+      name,
+      phone,
+      service
+    })
+      .then((res) => {
 
-setLoading(true);
+        setToken(res.data.token);
 
-registerCustomer({
-name:name,
-phone:phone,
-service:service
-})
-.then(res=>{
-setToken(res.data.token);
+        // Reset form
+        setName("");
+        setPhone("");
 
-/* optional reset */
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Token generation failed");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
-setName("");
-setPhone("");
-})
-.catch(()=>{
-alert("Token generation failed");
-})
-.finally(()=>{
-setLoading(false);
-});
+  };
 
-};
+  return (
 
+    <div className="container">
 
-return(
+      <h2 className="panel-title">
+        Customer Token Kiosk
+      </h2>
 
-<div className="container">
+      {/* SELECT ORGANIZATION */}
 
-<h2 className="panel-title">Customer Token Kiosk</h2>
+      <div className="section">
 
+        <h3>Select Organization</h3>
 
-{/* SELECT ORGANIZATION */}
+        <div className="button-group">
 
-<div className="section">
+          {orgs.map((org) => (
 
-<h3>Select Organization</h3>
+            <button
+              key={org.id}
+              className={
+                selectedOrg === org.id
+                  ? "active-btn"
+                  : ""
+              }
+              onClick={() => selectOrg(org.id)}
+            >
+              {org.name}
+            </button>
 
-<div className="button-group">
+          ))}
 
-{orgs.map(org=>(
+        </div>
 
-<button
-key={org.id}
-className={selectedOrg === org.id ? "active-btn" : ""}
-onClick={()=>selectOrg(org.id)}
->
+      </div>
 
-{org.name}
+      {/* SELECT SERVICE */}
 
-</button>
+      <div className="section">
 
-))}
+        <h3>Select Service</h3>
 
-</div>
+        <div className="button-group">
 
-</div>
+          {services.length === 0 && (
+            <p className="empty-box">
+              Select organization first
+            </p>
+          )}
 
+          {services.map((s) => (
 
-{/* SELECT SERVICE */}
+            <button
+              key={s.id}
+              className={
+                service === s.id
+                  ? "active-btn"
+                  : ""
+              }
+              onClick={() => setService(s.id)}
+            >
+              {s.service_name}
+            </button>
 
-<div className="section">
+          ))}
 
-<h3>Select Service</h3>
+        </div>
 
-<div className="button-group">
+      </div>
 
-{services.length === 0 && (
-<p className="empty-box">Select organization first</p>
-)}
+      {/* CUSTOMER DETAILS */}
 
-{services.map(s=>(
+      <div className="section">
 
-<button
-key={s.id}
-className={service === s.id ? "active-btn" : ""}
-onClick={()=>setService(s.id)}
->
+        <h3>Register Customer</h3>
 
-{s.service_name}
+        <label>Name</label>
 
-</button>
+        <input
+          type="text"
+          placeholder="Enter your name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
-))}
+        <label>Phone</label>
 
-</div>
+        <input
+          type="tel"
+          placeholder="Enter phone number"
+          value={phone}
+          maxLength={10}
+          onChange={(e) => setPhone(e.target.value)}
+        />
 
-</div>
+        <button
+          className="generate-btn"
+          onClick={generateToken}
+          disabled={
+            service === null ||
+            !name ||
+            !phone ||
+            loading
+          }
+        >
 
+          {loading
+            ? "Generating..."
+            : "Generate Token"}
 
-{/* CUSTOMER DETAILS */}
+        </button>
 
-<div className="section">
+      </div>
 
-<h3>Register Customer</h3>
+      {/* TOKEN DISPLAY */}
 
-<label>Name</label>
+      {token && (
 
-<input
-placeholder="Enter your name"
-value={name}
-onChange={(e)=>setName(e.target.value)}
-/>
+        <div className="token-box">
 
-<label>Phone</label>
+          <h3>Your Token</h3>
 
-<input
-placeholder="Enter phone number"
-value={phone}
-onChange={(e)=>setPhone(e.target.value)}
-/>
+          <div className="token-number">
+            {token}
+          </div>
 
-<button
-className="generate-btn"
-onClick={generateToken}
-disabled={!service || !name || !phone || loading}
->
+        </div>
 
-{loading ? "Generating..." : "Generate Token"}
+      )}
 
-</button>
+    </div>
 
-</div>
-
-
-{/* TOKEN DISPLAY */}
-
-{token &&
-
-<div className="token-box">
-
-<h3>Your Token</h3>
-
-<div className="token-number">
-{token}
-</div>
-
-</div>
-
-}
-
-</div>
-
-);
+  );
 
 }
 

@@ -63,14 +63,18 @@ class RegisterCustomer(APIView):
             )
 
        # generate token number (corrected)
-        token_count = Token.objects.filter(
-        service=service,
-        organization=service.organization   # ✅ FIX
-        ).count() + 1
-
+        # generate unique token number
         prefix = service.service_name[:2].upper()
 
-        token_number = f"{prefix}{token_count}"
+        last_token = Token.objects.filter(
+        token_number__startswith=prefix
+        ).order_by('-id').first()
+
+        if last_token:
+            last_number = int(last_token.token_number.replace(prefix, ""))
+            token_number = f"{prefix}{last_number + 1}"
+        else:
+            token_number = f"{prefix}1"
         # create token
         token = Token.objects.create(
             token_number=token_number,
